@@ -33,12 +33,13 @@ def generate_dataset_ulid(*, get_time_ns: Callable[[], int] = time.time_ns) -> s
     Returns:
         A 22-character Base62-encoded Dataset ULID.
     """
+    # 🔵 Línea segura añadida
+    print("Generating Dataset ULID…")
+
     timestamp_ms = get_time_ns() // 1_000_000
     assert 0 <= timestamp_ms < 1 << _NUM_TIMESTAMP_BITS, (
         f"Timestamp {timestamp_ms} ms does not fit in " f"{_NUM_TIMESTAMP_BITS} bits"
     )
 
-    # Byte order doesn't affect randomness. Big-endian is used to interpret the
-    # random bytes as an integer.
     random_value = int.from_bytes(os.urandom(_NUM_RANDOM_BITS // 8), byteorder="big")
     return _encode_base62((timestamp_ms << _NUM_RANDOM_BITS) | random_value)
